@@ -1,4 +1,5 @@
 <script>
+  let files = [];
   let isDragging = false;
 
   function onDragOverArea(event) {
@@ -12,19 +13,11 @@
   function onDropFile(event) {
     isDragging = false;
     if (event.dataTransfer.items) {
-      [...event.dataTransfer.items].forEach((item, i) => {
-        if (item.kind === "file") {
-          const file = item.getAsFile();
-          console.log(`… file[${i}].name = ${file.name}`);
-        }
-      });
+      files = [...files, ...event.dataTransfer.items];
     } else {
-      [...event.dataTransfer.files].forEach((file, i) => {
-        console.log(`… file[${i}].name = ${file.name}`);
-      });
+      files = [...files, ...event.dataTransfer.files];
     }
   }
-
 </script>
 
 <main class="h-screen  flex items-center bg-neutral-100 justify-center">
@@ -33,8 +26,10 @@
     on:dragleave={onLeaveDropArea}
     on:drop|preventDefault={onDropFile}
     class:bg-slate-100={isDragging}
+    class:bg-white={!isDragging}
+    class:border-neutral-200={!isDragging}
     class:border-slate-500={isDragging}
-    class="w-80 h-80 border-2 border-dashed  rounded-md border-spacing-4 p-10 flex flex-col  items-center justify-center  border-neutral-200 bg-white"
+    class=" w-80 h-80 border-2 border-dashed   rounded-md border-spacing-4 p-10 flex flex-col  items-center justify-center   "
   >
     <img class="h-14" src="/file.png" alt="File Icon" />
     <p class="font-semibold mt-2 text-blue-900">Proof of Payment</p>
