@@ -1,5 +1,5 @@
 <script>
-  let files = [{ name: "image_34.jpg" }, { name: "tito_mitto.png" },{ name: "Cho.svg" }];
+  let files = [{name: "BoomBox.jpg"}];
   let isDragging = false;
 
   function onDragOverArea(event) {
@@ -24,6 +24,11 @@
     }
   }
 
+  function removeFile(index){
+    files.splice(index, 1);
+    files = [...files];
+  }
+
   $: hasFiles = files.length > 0;
 </script>
 
@@ -32,14 +37,13 @@
     on:dragover|preventDefault={onDragOverArea}
     on:dragleave={onLeaveDropArea}
     on:drop|preventDefault={onDropFile}
-    class:bg-slate-100={isDragging}
-    class:bg-white={!isDragging}
+    class:bg-slate-100={isDragging || hasFiles}
+    class:bg-white={!isDragging && !hasFiles}
     class:border-neutral-200={!isDragging}
     class:border-slate-500={isDragging}
-    class:h-80={!hasFiles}
-    class=" w-80 border-2 border-dashed   rounded-md border-spacing-4  flex flex-col"
+    class=" w-80 border border-dashed   rounded-md border-spacing-4"
   >
-    <div class="flex flex-col flex-1 items-center justify-center py-5">
+    <div  class="flex w-80 h-80 flex-col flex-1 items-center justify-center py-5">
       <img class="h-14" src="/file.png" alt="File Icon" />
       <p class="font-semibold mt-2 text-blue-900">Proof of Payment</p>
       <p class="text-center text-neutral-500 mt-1">
@@ -47,7 +51,7 @@
       </p>
 
       <button
-        class:bg-slate-50={isDragging}
+        class:bg-slate-50={isDragging || hasFiles}
         class:border-slate-200={isDragging}
         class="px-4 py-2 mt-5 rounded-md flex items-center border-solid border-2 font-medium text-blue-900"
       >
@@ -55,10 +59,10 @@
         Upload
       </button>
     </div>
-    <div class:flex-auto={hasFiles} class="w-full bg-red-400 ">
-      {#each files as file}
-        <div class="p-4 flex flex-row items-center">
-          <img src="/file.png" alt="file" class="h-10 "> <span class="ml-5"> {file.name} </span>
+    <div class:flex-auto={hasFiles} class="w-full bg-gray-50">
+      {#each files as file, index}
+        <div class="p-3 flex flex-row items-center border-t">
+          <div class="p-2 rounded-md border"><img src="/file.png" alt="file" class="h-10 "></div> <span class="ml-5 flex-auto"> {file.name} </span> <button class="border px-2 rounded" on:click={()=> removeFile(index)}> X </button>
         </div>
       {/each}
     </div>
