@@ -2,16 +2,14 @@
   let isDragging = false;
 
   function onDragOverArea(event) {
-    console.log("File(s) in drop zone");
     isDragging = true;
   }
 
-  function onLeaveDropArea(e){
+  function onLeaveDropArea(e) {
     isDragging = false;
   }
 
   function onDropFile(event) {
-    console.log("File(s) dropped");
     isDragging = false;
     if (event.dataTransfer.items) {
       [...event.dataTransfer.items].forEach((item, i) => {
@@ -26,6 +24,7 @@
       });
     }
   }
+
 </script>
 
 <main class="h-screen  flex items-center bg-neutral-100 justify-center">
@@ -44,8 +43,8 @@
     </p>
 
     <button
-    class:bg-slate-50={isDragging}
-    class:border-slate-200={isDragging}
+      class:bg-slate-50={isDragging}
+      class:border-slate-200={isDragging}
       class="px-4 py-2 mt-5 rounded-md flex items-center border-solid border-2 font-medium text-blue-900"
     >
       <img class="h-5 mr-2" src="/upload.png" alt="File Icon" />
