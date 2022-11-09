@@ -29,6 +29,34 @@
     files = [...files];
   }
 
+  function pauseUpload(index){
+    //files.splice(index, 1);
+    //files = [...files];
+  }
+
+  function getImage(file) {
+    let type = file.name.split(".")[1];
+
+    switch(type){
+      case "png":
+        return "/png.png";
+      case "jpg":
+        return "/jpg.png";
+      case "pdf":
+        return "/pdf.png";
+      case "svg":
+        return "/svg.png";
+      case "txt":
+        return "/txt.png";
+      case "zip":
+        return "/zip.png";
+      case "ai":
+        return "/ai.png";
+      default:
+        return "/corrupted-file.png";
+    }
+  }
+
   $: hasFiles = files.length > 0;
 </script>
 
@@ -62,7 +90,14 @@
     <div class:flex-auto={hasFiles} class="w-full bg-gray-50">
       {#each files as file, index}
         <div class="p-3 flex flex-row items-center border-t">
-          <div class="p-2 rounded-md border"><img src="/file.png" alt="file" class="h-10 "></div> <span class="ml-5 flex-auto"> {file.name} </span> <button class="border px-2 rounded" on:click={()=> removeFile(index)}> X </button>
+          <div class="p-2 rounded-md border"><img src={getImage(file)} alt="file" class="h-10 "></div> 
+          <span class="ml-5 flex-auto"> {file.name} </span> 
+          <button class="border p-1 rounded mx-1" on:click={()=> pauseUpload(index)}> 
+            <img src="/pause.png" class="h-3" alt=""> 
+          </button>
+          <button class="border p-1 rounded" on:click={()=> removeFile(index)}>
+            <img src="/x.png" class="h-3" alt=""> 
+           </button>
         </div>
       {/each}
     </div>
