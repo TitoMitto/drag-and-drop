@@ -69,7 +69,8 @@
     class:bg-white={!isDragging && !hasFiles}
     class:border-neutral-200={!isDragging}
     class:border-slate-500={isDragging}
-    class=" w-80 border border-dashed   rounded-md border-spacing-4"
+    class:border-dashed={!hasFiles || isDragging}
+    class=" w-80 border    rounded-md border-spacing-4"
   >
     <div  class="flex w-80 h-80 flex-col flex-1 items-center justify-center py-5">
       <img class="h-14" src="/file.png" alt="File Icon" />
@@ -87,7 +88,7 @@
         Upload
       </button>
     </div>
-    <div class:flex-auto={hasFiles} class="w-full bg-gray-50">
+    <div class:flex-auto={hasFiles} class="w-full bg-gray-50 rounded-b-md">
       {#each files as file, index}
         <div class="p-3 flex flex-row items-center border-t">
           <div class="p-2 rounded-md border"><img src={getImage(file)} alt="file" class="h-10 "></div> 
