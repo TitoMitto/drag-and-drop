@@ -1,13 +1,10 @@
-
-
-
-<script >
+<script>
   "@hmr:keep-all";
 
   let supportedFileTypes = ["png", "jpg", "pdf", "svg", "txt", "zip", "ai"];
-  let uploads = {
-  };
-
+  let uploads = {};
+  let fileList;
+  let fileInput;
   let isDragging = false;
 
   function onDragOverArea(event) {
@@ -20,46 +17,49 @@
 
   async function onDropFile(event) {
     isDragging = false;
-
     if (event.dataTransfer.items) {
+      let files = [];
       [...event.dataTransfer.items].forEach((item) => {
         if (item.kind === "file") {
           const file = item.getAsFile();
-          uploads = {
-            ...uploads,
-            [file.name]:{
-              paused: false,
-              uploaded: null,
-              file,
-            },
-        };
+          files.push(file);
         }
       });
+      onReceiveFiles(files);
     } else {
-      uploads = {
-        ...uploads,
-        ...event.dataTransfer.files.map((file) => ({[file.name]:{
+      onReceiveFiles(event.dataTransfer.files);
+    }
+    
+  }
+
+  function onReceiveFiles(files) {
+    uploads = Object.assign(
+      {},
+      uploads,
+      ...files.map((file) => ({
+        [file.name]: {
           paused: false,
           uploaded: null,
           file,
-        }})),
-      };
-    }
+        },
+      }))
+    );
     uploadFiles();
+    console.log("JSSSSO ", uploads);
   }
 
   function removeFile(fileName) {
     delete uploads[fileName];
-    uploads = {...uploads};
+    uploads = { ...uploads };
   }
 
   function toggleUpload(index) {
-    console.log("PAUSING ",index,uploads[index], uploads)
+    console.log("PAUSING ", index, uploads[index], uploads);
     uploads[index].paused = !uploads[index].paused;
     uploads[index].uploaded = null;
     uploads = uploads;
-    console.log("AFTER ",index,uploads[index], uploads)
-    if(!uploads[index].paused){
+    console.log("AFTER ", index, uploads[index], uploads);
+    if (!uploads[index].paused) {
       uploadFiles();
     }
   }
@@ -67,7 +67,7 @@
   function uploadFiles() {
     Object.entries(uploads).forEach((item) => {
       let upload = item[1];
-      if(upload.uploaded == null && !upload.paused){
+      if (upload.uploaded == null && !upload.paused) {
         uploadFile(upload);
       }
     });
@@ -77,7 +77,7 @@
     uploads[upload.file.name].uploaded = false;
     uploads = uploads;
     setTimeout(() => {
-      if(!uploads[upload.file.name].paused){
+      if (!uploads[upload.file.name].paused) {
         uploads[upload.file.name].uploaded = Date.now();
       }
     }, 2000);
@@ -101,8 +101,23 @@
     return "/corrupted-file.png";
   }
 
+  function onPickFile() {
+    fileInput.click();
+  }
+
   $: hasFiles = uploads.length > 0;
-  $: isUploadingFiles = Object.entries(uploads).some((item) => !item[1].paused && !item[1].uploaded);
+  $: isUploadingFiles = Object.entries(uploads).some(
+    (item) => !item[1].paused && !item[1].uploaded
+  );
+
+  $: if (fileList) {
+    console.log(fileList);
+    let files = [];
+    for (let file of fileList) {
+      files.push(file);
+    }
+    onReceiveFiles(files);
+  }
 </script>
 
 <main class="h-screen  flex items-center bg-neutral-100 justify-center">
@@ -150,9 +165,17 @@
         <button
           class:bg-slate-50={isDragging || hasFiles}
           class:border-slate-200={isDragging}
+          on:click={onPickFile}
           class="px-4 py-2 mt-5 rounded-md flex items-center border-solid border-2 font-medium text-blue-900"
         >
-          <img class="h-5 mr-2" src="/upload.png" alt="File Icon" />
+          <input
+            type="file"
+            class="hidden"
+            bind:this={fileInput}
+            bind:files={fileList}
+            multiple
+          />
+          <img class="h-5 mr-2 " src="/upload.png" alt="File Icon" />
           Upload
         </button>
       </div>
@@ -180,7 +203,11 @@
                 class="border p-1 rounded mx-1 hover:bg-slate-100"
                 on:click={() => toggleUpload(fileName)}
               >
-                <img src={upload.paused? "/play.png":"/pause.png"} class="h-3" alt="" />
+                <img
+                  src={upload.paused ? "/play.png" : "/pause.png"}
+                  class="h-3"
+                  alt=""
+                />
               </button>
               <button
                 class="border p-1 rounded hover:bg-slate-100"
