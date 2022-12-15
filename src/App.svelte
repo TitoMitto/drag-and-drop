@@ -29,23 +29,22 @@
     } else {
       onReceiveFiles(event.dataTransfer.files);
     }
-    
   }
 
   function onReceiveFiles(files) {
-    uploads = Object.assign(
-      {},
-      uploads,
-      ...files.map((file) => ({
+    for (var file of files) {
+      uploads = {
+        ...uploads,
         [file.name]: {
-          paused: false,
-          uploaded: null,
-          file,
-        },
-      }))
-    );
+        paused: false,
+        uploaded: null,
+        file,
+      }
+      }
+    }
+    uploads = uploads;
+    console.log("GRUUUIT ", uploads)
     uploadFiles();
-    console.log("JSSSSO ", uploads);
   }
 
   function removeFile(fileName) {
@@ -105,10 +104,16 @@
     fileInput.click();
   }
 
-  $: hasFiles = uploads.length > 0;
-  $: isUploadingFiles = Object.entries(uploads).some(
+
+  $: hasFiles = Object.keys(uploads).length > 0;
+
+  $:  console.log("CHUCHU ", uploads);
+
+  $: isUploadingFiles = (()=> { 
+   
+    return Object.entries(uploads).some(
     (item) => !item[1].paused && !item[1].uploaded
-  );
+  );})()
 
   $: if (fileList) {
     console.log(fileList);
